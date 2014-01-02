@@ -23,7 +23,7 @@ function Get-NetworkHostList
 
         # Include the Network and Broadcast Address in the results.
         [Parameter()]
-        [SwitchParameter]
+        [Switch]
         $All
     )   
 
@@ -60,9 +60,10 @@ function Get-NetworkHostList
 
         if ($PSBoundParameters["All"])
         {
-            Write-Output $startIP
-            $nextIP = Increment $nextIp
+            Write-Output $startIP            
         }
+        
+        $nextIP = Increment $nextIp
 
         While ($nextIp -ne $endIP)
         {
