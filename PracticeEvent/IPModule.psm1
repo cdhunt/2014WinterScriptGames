@@ -1,12 +1,24 @@
 ﻿<#
 .Synopsis
-   Short description
+   Return an array of IP Addresses
 .DESCRIPTION
-   Long description
+   Return an array of System.Net.IPAddress objects from a string in the form 10.10.10.0/24.
 .EXAMPLE
-   Example of how to use this cmdlet
+   Return an array of usable IP addresses given a subnet.
+
+   PS C:\> $IPs = Get-NetworkHostList "192.168.7.0/24"
+   PS C:\> $IPs[0].IPAddressToString  
+   192.168.7.1
+   PS C:\temp> $ips[-1].IPAddressToString
+   192.168.7.254
 .EXAMPLE
-   Another example of how to use this cmdlet
+   Return an array of IP addresses given a subnet including Network and Broadcast addresses.
+
+   PS C:\temp> $IPs = Get-NetworkHostList "10.1.2.3/16" -All
+   PS C:\temp> $ips[0].IPAddressToString
+   10.1.0.0
+   PS C:\temp> $ips[-1].IPAddressToString
+   10.1.255.255
 #>
 function Get-NetworkHostList
 {
@@ -28,7 +40,7 @@ function Get-NetworkHostList
     )   
 
     End
-        {
+    {
         $parts = $Network -split '/'
         $ipAddressString = $parts[0]
         $networkBits = $parts[1]
@@ -63,6 +75,7 @@ function Get-NetworkHostList
             Write-Output $startIP            
         }
         
+        # First IP is Network Address
         $nextIP = Increment $nextIp
 
         While ($nextIp -ne $endIP)
@@ -72,6 +85,7 @@ function Get-NetworkHostList
             
         }
 
+        # Last IP is Broadcast Address
         if ($PSBoundParameters["All"])
         {
             Write-Output $nextIp
@@ -80,7 +94,7 @@ function Get-NetworkHostList
 
     Begin
     {
-        function Increment ([IPAddress]$address)
+        Function Increment ([IPAddress]$address)
         {
             $bytes = $address.GetAddressBytes()
 
