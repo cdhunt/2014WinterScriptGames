@@ -7,7 +7,7 @@ $c = 0
 Foreach ($computer in $list)
 {
     [bool]$alive = $false
-    Write-Progress -Activity "Finding available hosts" -Status "Testing" -CurrentOperation $computer -PercentComplete (($c++/$list.count)*100)
+    Write-Progress -Activity "Finding available hosts" -CurrentOperation "Testing" -Status $computer -PercentComplete (($c++/$list.count)*100)
 
     try {
         $pingResults = Test-Connection -ComputerName $computer -Count 2 -ErrorAction SilentlyContinue
@@ -24,16 +24,7 @@ Foreach ($computer in $list)
     if ($alive)
     {
         $computerName = [Net.Dns]::GetHostEntry($computer)
-        Write-Output $computerName.HostName
-
-        <# TODO: Handle local host connection (no credentials)
-Get-WmiObject : User credentials cannot be used for local connections At C:\...\PingSweepModule.ps1:22 char:9
-+         Get-WmiObject -Namespace 'root\CIMV2' -Class 'Win32_OperatingSystem' -Co ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : InvalidOperation: (:) [Get-WmiObject], ManagementException
-    + FullyQualifiedErrorId : GetWMIManagementException,Microsoft.PowerShell.Commands.Get
-   WmiObjectCommand
-        #>
+        Write-Verbose "$($computerName.HostName) is ALIVE. Interigating for OS information."
         try
         {
             Get-WmiObject -Namespace 'root\CIMV2' -Class 'Win32_OperatingSystem' -ComputerName $computerName.HostName -Credential $Credential -Impersonation Impersonate -Authentication PacketPrivacy -ErrorAction Stop
@@ -65,6 +56,5 @@ Get-WmiObject : User credentials cannot be used for local connections At C:\...\
         {
             Write-Warning "Could not connect to $($computerName.HostName)"
         }
-
     }
 }
