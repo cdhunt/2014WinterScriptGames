@@ -6,7 +6,7 @@
 .EXAMPLE
    Return an array of usable IP addresses given a subnet.
 
-   PS C:\> $IPs = Get-NetworkHostList "192.168.7.0/24"
+   PS C:\> $IPs = Get-NetworkHostList 192.168.7.0/24
    PS C:\> $IPs[0].IPAddressToString  
    192.168.7.1
    PS C:\temp> $ips[-1].IPAddressToString
@@ -14,7 +14,7 @@
 .EXAMPLE
    Return an array of IP addresses given a subnet including Network and Broadcast addresses.
 
-   PS C:\temp> $IPs = Get-NetworkHostList "10.1.2.3/16" -All
+   PS C:\temp> $IPs = Get-NetworkHostList 10.1.2.3/16 -All
    PS C:\temp> $ips[0].IPAddressToString
    10.1.0.0
    PS C:\temp> $ips[-1].IPAddressToString
@@ -30,6 +30,7 @@ function Get-NetworkHostList
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
+        [ValidatePattern("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-3]?[0-9])$")]
         [String]
         $Network,
 
