@@ -1,60 +1,133 @@
 ﻿#requires -version 4
 
-$delim = ', ' 
-$names = "Syed, Kim, Sam, Hazem, Pilar, Terry, Amy, Greg, Pamela, Julie, David, Robert, Shai, Ann, Mason, Sharon" -split $delim
+$DELIMITER = ',' 
+
+function Get-Names
+{
+    [CmdletBinding()]
+    [OutputType([String[]])]
+    Param
+    (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
+        $Path
+    )
+
+    $file = (Get-Content -Path $Path) -join $DELIMITER
+
+    $list = $file -split $DELIMITER
+
+    foreach ($i in $list)
+    {
+        $i.ToString().Trim() | Write-Output
+    }
+}
+
 
 function Initialize-RandomArray
 {
-    return $names | Get-Random -Count $names.Count
-}
-$randomArray = Initialize-RandomArray
-
-
-function Get-NamePairs
+    [CmdletBinding()]
+    [OutputType([String[]])]
+    Param
+    (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
+        $InputObject
+    )
+    Begin
     {
-    $half = $names.Count / 2 -as [int]
-    $first, $second = $randomArray.Where({$_}, 'split', $half)
-
-    for ($i = 0; $i -lt $second.Count; $i++)
-    { 
-        $members = @($first[$i], $second[$i])
-
-
-        $output = [PSCustomObject]@{Team = $i+1; Members = $members}
-        $output | Write-Output
+        $list = @()
+    }
+    Process
+    {
+        $list += $InputObject        
+    }
+    End
+    {
+        return $list | Get-Random -Count $list.Count
     }
 }
 
-$teams = Get-NamePairs
+function Get-Pairs
+{
+    [CmdletBinding()]
+    [OutputType([PSCustomObject[]])]
+    Param
+    (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
+        $InputObject
+    )
+    Begin
+    {
+        $list = @()
+    }
+        Process
+    {
+        $list += $InputObject        
+    }
+    End
+    {
+        $half = $list.Count / 2 -as [int]
+        $first, $second = $list.Where({$_}, 'split', $half)
+
+        for ($i = 0; $i -lt $second.Count; $i++)
+        { 
+            $members = @($first[$i], $second[$i])
+
+            $output = [PSCustomObject]@{Team = $i+1; Members = $members}
+            $output | Write-Output
+        }
+    }
+}
 
 function Set-TeamBalance
 {
-    $lastTeamIndex = $teams.Count - 1
-    foreach ($team in $teams)
+    [CmdletBinding()]
+    [OutputType([PSCustomObject[]])]
+    Param
+    (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
+        $InputObject
+    )
+    Begin
     {
-        if ($team.Members -contains $null)
+        $list = @()
+    }
+        Process
+    {
+        $list += $InputObject        
+    }
+    End
+    {
+        $lastTeamIndex = $list.Count - 1
+        foreach ($team in $list)
         {
-            $lastTeamIndex--
-            $loner = $team | Where-Object {$_.Members -contains $null} | Select-Object -ExpandProperty Members
-            $allNames = $teams | Where-Object {$_.Members -notcontains $null} | Select-Object -ExpandProperty Members
+            if ($team.Members -contains $null)
+            {
+                $lastTeamIndex--
+                $loner = $team | Where-Object {$_.Members -contains $null} | Select-Object -ExpandProperty Members
+                $allNames = $list | Where-Object {$_.Members -notcontains $null} | Select-Object -ExpandProperty Members
          
-            $prompt = "Who's team would you like to add $loner?"
-            Write-Host "Available members"
-            Write-Host ($allNames -join $delim)
-            $specialTeam = Read-Host -Prompt $prompt
-        }
-    }
+                $prompt = "To who's team would you like to add $($loner)?"
+                Write-Host "Available members:" ($allNames -join $DELIMITER)
 
-    foreach ($team in $teams)
-    {
-        if ($team.Members -contains $specialTeam)
+                $specialTeam = Read-Host -Prompt $prompt
+            }
+        }
+
+        foreach ($team in $list)
         {
-            Write-Host "Found it"
-            $team.Members += $loner
+            if ($team.Members -contains $specialTeam)
+            {
+                $team.Members += $loner
+            }
         }
-    }
 
-    $teams[(0..$lastTeamIndex)] | Write-Output
+        $list[(0..$lastTeamIndex)] | Write-Output
+    }
 }
 
-Set-TeamBalance
+
+Get-Names -Path C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event1\namelist.txt | Initialize-RandomArray | Get-Pairs | Set-TeamBalance
