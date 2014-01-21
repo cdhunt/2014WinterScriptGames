@@ -1,5 +1,6 @@
 # Pairs
 
+## Part 1
 Your company has decided to have secret pals to improve morale. The idea is that each person in the department will be assigned the name of a team mate, and once a quarter you have to hide a low cost gift on his / her desk. Your manager has appointed you to write the script that will create the random name assignments. Here are the names of the people in the department for which you need to create the pairs:
  
 Syed, Kim, Sam, Hazem, Pilar, Terry, Amy, Greg, Pamela, Julie, David, Robert, Shai, Ann, Mason, Sharon
@@ -18,6 +19,7 @@ Optionally the pairs should be saved to a file. The files should be named such t
  
 There are 16 names in the list, so that would be 8 pairs BUT your solution must work with more pairs than that. In addition, it should issue a warning if there is an odd number of names. At that point, you should be given the option to select a person to have TWO secret pals.
 
+## Part 2
 One of the project managers in your company heard about this from your manager and decided a similar approach could solve one of his problems. He is running a development project and depending on the phase of the project could have anywhere from 8 to 50 people working on the project. The software being developed is very important to the company’s future plans so he has the developers working in pairs so that knowledge is shared.
 The project manager needs you to modify your code so that:
 
