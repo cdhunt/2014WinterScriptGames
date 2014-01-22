@@ -8,6 +8,7 @@ function Get-Names
     [OutputType([String[]])]
     Param
     (
+		# Path to a file containing a name list.
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         $Path
@@ -30,6 +31,7 @@ function Initialize-RandomArray
     [OutputType([String[]])]
     Param
     (
+		# Specifies objects to send to the cmdlet through the pipeline. This parameter enables you to pipe objects to Initialize-RandomArray.
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         $InputObject
@@ -54,10 +56,12 @@ function Get-Pairs
     [OutputType([PSCustomObject[]])]
     Param
     (
+		# Specifies objects to send to the cmdlet through the pipeline. This parameter enables you to pipe objects to Get-Pairs.
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         $InputObject,
 		
+		# Assign the last person in an odd numbered list to a selected team. Default is True.
 		[Parameter(Mandatory=$false)]
 		[Switch]
 		$ReassignSinglton = $true
@@ -81,7 +85,6 @@ function Get-Pairs
             $members = @($first[$i], $second[$i])
 
             $teams += [PSCustomObject]@{Team = $i+1; Members = $members}
-            #$output | Write-Output
         }
 		
 		$lastTeamIndex = $teams.Count - 1
@@ -114,55 +117,5 @@ function Get-Pairs
         $teams[(0..$lastTeamIndex)] | Write-Output
     }		
 }
-
-# Deprecated 
-function Set-TeamBalance
-{
-    [CmdletBinding()]
-    [OutputType([PSCustomObject[]])]
-    Param
-    (
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
-        $InputObject
-    )
-    Begin
-    {
-        $list = @()
-    }
-        Process
-    {
-        $list += $InputObject        
-    }
-    End
-    {
-        $lastTeamIndex = $list.Count - 1
-        foreach ($team in $list)
-        {
-            if ($team.Members -contains $null)
-            {
-                $lastTeamIndex--
-                $loner = $team | Where-Object {$_.Members -contains $null} | Select-Object -ExpandProperty Members
-                $allNames = $list | Where-Object {$_.Members -notcontains $null} | Select-Object -ExpandProperty Members
-         
-                $prompt = "To who's team would you like to add $($loner)?"
-                Write-Host "Available members:" ($allNames -join $DELIMITER)
-
-                $specialTeam = Read-Host -Prompt $prompt
-            }
-        }
-
-        foreach ($team in $list)
-        {
-            if ($team.Members -contains $specialTeam)
-            {
-                $team.Members += $loner
-            }
-        }
-
-        $list[(0..$lastTeamIndex)] | Write-Output
-    }
-}
-
 
 Export-ModuleMember -Function * -Variable DELIMITER
