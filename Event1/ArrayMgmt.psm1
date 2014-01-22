@@ -56,7 +56,11 @@ function Get-Pairs
     (
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        $InputObject
+        $InputObject,
+		
+		[Parameter(Mandatory=$false)]
+		[Switch]
+		$ReassignSinglton = $true
     )
     Begin
     {
@@ -71,16 +75,47 @@ function Get-Pairs
         $half = $list.Count / 2 -as [int]
         $first, $second = $list.Where({$_}, 'split', $half)
 
+		$teams = @()
         for ($i = 0; $i -lt $second.Count; $i++)
         { 
             $members = @($first[$i], $second[$i])
 
-            $output = [PSCustomObject]@{Team = $i+1; Members = $members}
-            $output | Write-Output
+            $teams += [PSCustomObject]@{Team = $i+1; Members = $members}
+            #$output | Write-Output
         }
-    }
+		
+		$lastTeamIndex = $teams.Count - 1
+		
+		if ($ReassignSinglton -eq $true)
+		{			
+	        foreach ($team in $teams)
+	        {
+	            if ($team.Members -contains $null)
+	            {
+	                $lastTeamIndex--
+	                $loner = $team | Where-Object {$_.Members -contains $null} | Select-Object -ExpandProperty Members	            
+	         
+	                $prompt = "To who's team would you like to add $($loner)?"
+	                Write-Host "Available members:" ($first -join ($DELIMITER + ' '))
+
+	                $specialTeam = Read-Host -Prompt $prompt
+	            }
+	        }
+
+	        foreach ($team in $teams)
+	        {
+	            if ($team.Members -contains $specialTeam)
+	            {
+	                $team.Members += $loner
+	            }
+	        }
+		}
+
+        $teams[(0..$lastTeamIndex)] | Write-Output
+    }		
 }
 
+# Deprecated 
 function Set-TeamBalance
 {
     [CmdletBinding()]
