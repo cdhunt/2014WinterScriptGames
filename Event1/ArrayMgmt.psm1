@@ -130,4 +130,4 @@ function Set-TeamBalance
 }
 
 
-Export-ModuleMember -Cmdlet * -Variable $DELIMITER
+Export-ModuleMember -Function * -Variable DELIMITER
