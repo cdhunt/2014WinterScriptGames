@@ -34,3 +34,21 @@ function Set-Primaries
 }
 
 Get-Names -Path $Path | Initialize-RandomArray | Set-Primaries -Name @("David", "Kim", "Sam", "Hazem") | Get-Pairs
+
+<#
+Start results of Set-Primaries
+remove Primaries > available members
+Get team history !! Need persistance
+split list like in Get-Pairs
+foreach first
+. get previous 4 team members
+. available members > working list
+. get random working list member > random member
+. while
+ . if prevous 4 -notcontain random member
+   . remove random member from available members
+   . return @{Members=@(first, random member}
+ . else
+   . remove random member from working list
+. do
+#>
