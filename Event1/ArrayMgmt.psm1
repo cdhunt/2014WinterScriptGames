@@ -46,7 +46,7 @@ function Initialize-RandomArray
     }
     End
     {
-        return $list | Get-Random -Count $list.Count
+        Get-Random $list -Count $list.Count | Write-Output
     }
 }
 

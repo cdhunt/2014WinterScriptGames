@@ -6,7 +6,7 @@ Param
 	$Path = "namelist.txt"
 )
 
-$teams = Get-Names -Path $Path | Initialize-RandomArray | Get-Pairs -reassignsinglton #| Set-TeamBalance
+$teams = Get-Names -Path $Path | Initialize-RandomArray | Get-Pairs
 
 foreach ($team in $teams) 
 {
