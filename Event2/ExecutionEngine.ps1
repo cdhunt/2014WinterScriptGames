@@ -41,12 +41,10 @@ function Invoke-Scan
     {
         foreach ($item in $processItems)
         {
-           $results += & $Fingerprint
-
+           $results += $Fingerprint.Invoke()
         }
 
         Write-Output $results
-
     }
 }
 
