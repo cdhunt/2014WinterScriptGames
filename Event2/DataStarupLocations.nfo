@@ -1,0 +1,17 @@
+hklm:\System\CurrentControlSet\Services
+hklm:\Software\Microsoft\Windows\CurrentVersion\RunServicesOnce
+hkcu:\Software\Microsoft\Windows\CurrentVersion\RunServicesOnce
+hklm:\Software\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Notify
+hklm:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\Userinit
+hklm:\Software\Microsoft\Windows\CurrentVersion\RunOnce
+hklm:\Software\Microsoft\Windows\CurrentVersion\RunOnceEx
+hklm:\Software\Microsoft\Windows\CurrentVersion\Run
+hkcu:\Software\Microsoft\Windows\CurrentVersion\Run
+hkcu:\Software\Microsoft\Windows\CurrentVersion\RunOnce
+hkcu:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run
+hklm:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run
+hklm:\Software\Microsoft\Windows NT\CurrentVersion\Windows\load
+hklm:\Software\Microsoft\Windows NT\CurrentVersion\Windows
+hklm:\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellServiceObjectDelayLoad
+hklm:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SharedTaskScheduler
+C:\Documents and Settings\All Users\Start Menu\Programs\Startup
