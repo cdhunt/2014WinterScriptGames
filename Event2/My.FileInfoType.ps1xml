@@ -1,0 +1,11 @@
+<Types>
+    <Type>
+        <Name>System.IO.FileInfo</Name>
+        <Members>
+          <ScriptProperty>
+            <Name>MD5Hash</Name>
+            <GetScriptBlock>(Get-FileHash -Path $this.FullName -Algorithm MD5).Hash</GetScriptBlock>
+          </ScriptProperty>
+        </Members>
+    </Type>
+</Types>
