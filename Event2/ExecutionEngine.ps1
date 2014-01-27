@@ -50,7 +50,7 @@ function Invoke-Scan
     }
 }
 
-$SystemFileFingerprint = [scriptblock]{
+$FileFingerprint = [scriptblock]{
     if ($item -match "windir")
     {
         $expandedPath = $item  -replace "windir", $env:windir
@@ -66,7 +66,7 @@ $SystemFileFingerprint = [scriptblock]{
         $file = Get-Item -Path $expandedPath -ErrorAction Stop
 
         $obj = [pscustomobject]@{"path" = $file.FullName
-                                 "hash" = $file.MD5Hash
+                                 "hash" = (Get-FileHash $file -Algorithm MD5 | Select-Object -ExpandProperty Hash)
                                  "timestamp" = $file.LastWriteTime
                                  "length" = $file.Length}
 
@@ -79,8 +79,9 @@ $SystemFileFingerprint = [scriptblock]{
     }
 }
 
-
-$EnvironmentVarsFingerprint = [scriptblock]{[pscustomobject]@{"Name" = $item.Name.ToString(); "Value" = $item.Value.ToString()} | Write-Output}
+$EnvironmentVarsFingerprint = [scriptblock]{
+    [pscustomobject]@{"Name" = $item.Name.ToString(); "Value" = $item.Value.ToString()} | Write-Output
+ }
 
 $NetworkFingerpring = [scriptblock]{
     $pattern = [regex]"(\S+)\s+(\S+):(\S+)\s+(\S*):(\S+)\s*(\S*)"
@@ -119,7 +120,7 @@ $StartupLocationsFingerprint = [scriptblock]{
     Write-Output $obj
 }
 
-Get-Content "C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\DataSystemFiles.nfo" | Invoke-Scan -Fingerprint $SystemFileFingerprint
-Get-ChildItem "env:\" | Invoke-Scan -Fingerprint $EnvironmentVarsFingerprint
-Netstat -a | Select-Object -Skip 5 | Invoke-Scan -Fingerprint $NetworkFingerpring
-Get-Content "C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\DataStarupLocations.nfo" | Invoke-Scan -Fingerprint $StartupLocationsFingerprint
+Get-Content "C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\DataSystemFiles.nfo" | Invoke-Scan -Fingerprint $FileFingerprint
+#Get-ChildItem "env:\" | Invoke-Scan -Fingerprint $EnvironmentVarsFingerprint
+#Netstat -a | Select-Object -Skip 5 | Invoke-Scan -Fingerprint $NetworkFingerpring
+#Get-Content "C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\DataStarupLocations.nfo" | Invoke-Scan -Fingerprint $StartupLocationsFingerprint
