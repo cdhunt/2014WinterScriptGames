@@ -48,6 +48,111 @@ function Invoke-Scan
     }
 }
 
+<#
+.Synopsis
+   Short description
+.DESCRIPTION
+   Long description
+.EXAMPLE
+   Example of how to use this cmdlet
+.EXAMPLE
+   Another example of how to use this cmdlet
+#>
+function Test-FingerprintScriptBlock
+{
+    [CmdletBinding()]
+    [OutputType([bool])]
+    Param
+    (
+        # Param1 help description
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0)]
+        [scriptblock]
+        $ScriptBlock
+    )
+
+    $foundItem = $false
+    $foundWriteOut = $falseContent
+    
+    $tokens = [System.Management.Automation.PSParser]::Tokenize([scriptblock]{Write-Output}, [ref]$null) 
+    
+    ForEach ($token in $tokens)
+    {
+        $Content = $token.Content
+        switch ($token.Type)
+        {
+            'Variable' {
+                if ($Content -match 'item')
+                {
+                    $foundItem = $true
+                }
+            }
+            'Command' {
+                if ($Content -match 'Write-Output')
+                {
+                $foundWriteOut = $true   
+                }
+            }
+        }
+    }
+
+    if (-not $foundItem -and -not $foundWriteOut)
+    {
+        Write-Verbose "FingerPrintScript is missing use of 'item' variable and the 'Write-Output' cmdlet."
+        Write-Output $false
+    }
+    elseif (-not $foundItem)
+    {
+        Write-Verbose "FingerPrintScript is missing use of 'item' variable."
+        Write-Output $false
+    }
+    elseif (-not $foundWriteOut)
+    {
+        Write-Verbose "FingerPrintScript is missing use of the 'Write-Output' cmdlet."
+        Write-Output $false
+    }
+
+    Write-Output $true
+}
+
+
+<#
+.Synopsis
+   Short description
+.DESCRIPTION
+   Long description
+.EXAMPLE
+   Example of how to use this cmdlet
+.EXAMPLE
+   Another example of how to use this cmdlet
+#>
+function Get-ScanModules
+{
+    [CmdletBinding()]
+    [OutputType([PSobject[]])]
+    Param
+    (
+        # Param1 help description
+        [Parameter(ValueFromPipeline=$true, Position=0)]
+        $Path = "$PSScriptRoot\module.config"
+    )
+
+    [xml]$config = Get-Content $Path
+
+    $availableModules = $config.configuration.moduleSections.moduleSection
+
+    $modulesSettings = @()
+    foreach ($moduleName in $availableModules)
+    {
+        $moduleSettingXML = $config.configuration.moduleSettings.module | Where-Object name -eq $moduleName
+        $modulesSettings += [pscustomobject]@{name = $moduleSettingXML.name
+                                              fingerprintscript = [scriptblock]::Create($moduleSettingXML.fingerprintscript.'#cdata-section')
+                                              serializeas = $moduleSettingXML.serializeAs
+                                              objects = $moduleSettingXML.objects.object}
+    }
+
+    Write-Output $modulesSettings
+}
+
 $FileFingerprint = [scriptblock]{
     if ($item -match "windir")
     {
@@ -118,7 +223,7 @@ $StartupLocationsFingerprint = [scriptblock]{
     Write-Output $obj
 }
 
-Get-Content "C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\DataSystemFiles.nfo" | Invoke-Scan -Fingerprint $FileFingerprint
+#Get-Content "C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\DataSystemFiles.nfo" | Invoke-Scan -Fingerprint $FileFingerprint
 #Get-ChildItem "env:\" | Invoke-Scan -Fingerprint $EnvironmentVarsFingerprint
 #Netstat -a | Select-Object -Skip 5 | Invoke-Scan -Fingerprint $NetworkFingerpring
 #Get-Content "C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\DataStarupLocations.nfo" | Invoke-Scan -Fingerprint $StartupLocationsFingerprint
