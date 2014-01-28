@@ -35,10 +35,10 @@ function Write-ScanResults
         [string]
         $Password,
 
-        [Parameter(Mandatory=$true, Position=5)] 
+        [Parameter(Position=5)] 
         [ValidateSet("CSV", "JSON")]     
         [string]
-        $SerializeAs,
+        $SerializeAs = "CSV",
 
         [Parameter(Position=5)] 
         [switch]
@@ -120,7 +120,7 @@ function Read-ScanResults
 
         $decrypted = Read-EncryptedString -InputObject $contents -Password Password
 
-        if ($decrypted[0] -match '{')
+        if ($decrypted[0] -match '{' -or $SerializeAs -eq "JSON")
         {
             $decrypted | ConvertFrom-Json
         }
