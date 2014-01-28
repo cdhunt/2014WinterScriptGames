@@ -67,3 +67,67 @@ function Write-ScanResults
     }
     Add-Content -Path $reportFullPath -Value $secureResults -Encoding UTF8 -Force
 }
+
+
+<#
+.Synopsis
+   Short description
+.DESCRIPTION
+   Long description
+.EXAMPLE
+   Example of how to use this cmdlet
+.EXAMPLE
+   Another example of how to use this cmdlet
+#>
+function Read-ScanResults
+{
+    [CmdletBinding()]
+    [OutputType([PSObject])]
+    Param
+    (
+
+        [Parameter(Mandatory=$true, Position=1)]      
+        [string]
+        $Computer,
+
+        [Parameter(Mandatory=$true, Position=2)]      
+        [string]
+        $ModuleName,
+
+        [Parameter(Mandatory=$true, Position=3)]      
+        [DateTime]
+        $Date,
+
+        [Parameter(Mandatory=$true, Position=4)]      
+        [string]
+        $Password,
+
+        [Parameter(Position=5)] 
+        [ValidateSet("CSV", "JSON")]     
+        [string]
+        $SerializeAs
+    )
+
+    $string = [string]::Empty
+    $datestamp = Get-Date -Format "yyyy-MM-dd"
+    $reportFileName = "$($ModuleName)_$datestamp.dat"
+    $reportFolderPath = Join-Path -Path $Path -ChildPath $Computer
+    $reportFullPath = Join-Path -Path reportFolderPath -ChildPath $newReportFileName
+
+    if (Test-Path -Path $reportFullPath -PathType File)
+    {
+        $contents = Get-Content $reportFullPath -Raw
+
+        $decrypted = Read-EncryptedString -InputObject $contents -Password Password
+
+        if ($decrypted[0] -match '{')
+        {
+            $decrypted | ConvertFrom-Json
+        }
+        else
+        {
+            $decrypted | ConvertFrom-Csv
+        }
+    }
+
+}
