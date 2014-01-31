@@ -21,7 +21,6 @@ function Get-StartupLocationsFingerprint
 
     Begin
     {
-        $objects = @()
         $items = @()
     }
     Process
@@ -30,7 +29,7 @@ function Get-StartupLocationsFingerprint
         {
             Foreach ($object in $InputObject)
             {
-                $objects += $object
+                $items += $object
             }
         }
         else
@@ -44,7 +43,7 @@ function Get-StartupLocationsFingerprint
         foreach ($item in $items)
         {
             Get-ChildItem -Path $item -ErrorAction SilentlyContinue | 
-                Select-Object -ExpandProperty Name |
+                Select-Object -Property Name |
                 Write-Output
         }
     }

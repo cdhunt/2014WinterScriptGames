@@ -165,7 +165,6 @@ function Read-EncryptedString
 function Write-ScanResults
 {
     [CmdletBinding()]
-    [OutputType([null])]
     Param
     (
         # Param1 help description
@@ -194,32 +193,46 @@ function Write-ScanResults
         [string]
         $SerializeAs = "CSV",
 
-        [Parameter(Position=5)] 
+        [Parameter(Position=6)] 
         [switch]
         $Compress = $true
     )
 
-    $string = [string]::Empty
-    $datestamp = Get-Date -Format "yyyy-MM-dd"
-    $reportFileName = "$($ModuleName)_$datestamp.dat"
-    $reportFolderPath = Join-Path -Path $Path -ChildPath $Computer
-    $reportFullPath = Join-Path -Path reportFolderPath -ChildPath $newReportFileName
-
-    switch ($SerializeAs)
+    Begin
     {
-        'JSON' {$string = $InputObject | ConvertTo-Json}
-        Default {$string = $InputObject -join "`n`r" | ConvertTo-Csv}
+        $objects = @()
     }
-
-    $encryptParams = @{"Password" = $Password
-                       "Compress" = $Compress}
-    $secureResults = Write-EncryptedString $string @encryptParams
-
-    if (-not (Test-Path -Path $reportFolderPath -PathType Container))
+    Process
     {
-        New-Item -Path $Path -Name $Computer -ItemType Directory -Force
+        foreach ($object in $InputObject)
+        {
+            $objects += $object
+        }
     }
-    Add-Content -Path $reportFullPath -Value $secureResults -Encoding UTF8 -Force
+    End
+    {
+        $string = [string]::Empty
+        $datestamp = Get-Date -Format "yyyy-MM-dd"
+        $reportFileName = "$($ModuleName)_$datestamp.dat"
+        $reportFolderPath = Join-Path -Path $Path -ChildPath $Computer
+        $reportFullPath = Join-Path -Path $reportFolderPath -ChildPath $reportFileName
+
+        switch ($SerializeAs)
+        {
+            'JSON' {$string = $objects | ConvertTo-Json}
+            Default {$string = ($objects | ConvertTo-Csv) -join "`n`r"}
+        }
+
+        $encryptParams = @{"Password" = $Password
+                           "Compress" = $Compress}
+        $secureResults = Write-EncryptedString $string @encryptParams
+
+        if (-not (Test-Path -Path $reportFolderPath -PathType Container))
+        {
+            New-Item -Path $Path -Name $Computer -ItemType Directory -Force
+        }
+        Add-Content -Path $reportFullPath -Value $secureResults -Encoding UTF8 -Force
+    }
 }
 
 

@@ -21,7 +21,6 @@ function Get-FileFingerprint
 
     Begin
     {
-        $objects = @()
         $items = @()
     }
     Process
@@ -30,7 +29,7 @@ function Get-FileFingerprint
         {
             Foreach ($object in $InputObject)
             {
-                $objects += $object
+                $items += $object
             }
         }
         else

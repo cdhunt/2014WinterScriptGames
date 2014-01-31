@@ -22,21 +22,24 @@ function Get-NetworkFingerprint
         $tcpListeners = [net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveTcpListeners()
 
         $openPorts = $tcpListeners | 
-                        Group-Object -Property Port | 
-                        Select-Object -ExpandProperty Name -Unique | 
+                        Select-Object -Expand Port -Unique | 
                         ForEach-Object {$_ -as [int]} | 
-                        Sort-Object
+                        Sort-Object |
+                        Select-Object @{Label="Port"; Expression={$_}} |
+                        Write-Output
 
+        <#
         $tcpConnections = [net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveTcpConnections()
-        $tcpConnections.Where({$_.Address -ne "127.0.0.1"})
+
         $remoteConnections = $tcpConnections.Where({$_.RemoteEndPoint.Address -ne "127.0.0.1"}) | 
                                 Select-Object -ExpandProperty RemoteEndPoint |                                 
                                 ForEach-Object {[ipaddress]$_.Address} |
                                 Sort-Object Address |
-                                Select-Object -ExpandProperty IPAddressToString
+                                Select-Object -Property @{Label="Address"; Expression={$_.IPAddressToString}}
 
-        Write-Output $openPorts
-        <#
+
+        }
+        
         [pscustomobject]@{OpenPorts = $openPorts
                           RemoteConnections = $remoteConnections} |
                         Write-Output

@@ -72,11 +72,20 @@ function Invoke-Scans
         
         $scanModuleFunctions = $scanModules | Select-Object @{Label="Command"; Expression = {$_.ExportedCommands.Keys.GetEnumerator()}}
 
-        foreach ($function in $scanModuleFunctions)
+        foreach ($function in ($scanModuleFunctions))
         {
+            $command = $function.Command
+            $moduleID = $command.TrimStart("Get-")
+            $computerName = $env:COMPUTERNAME
+            $date = Get-Date -Format "yyyy-MM-dd"
+
             Write-Verbose "Executing $($function.Command)"
-            $devnul = [scriptblock]::Create($function.Command).Invoke()
-            Write-Output $devnul
+            $results = [scriptblock]::Create($function.Command).Invoke()
+
+            #Write-Outp#ut $results
+
+            $results | Write-ScanResults -Path 'C:\temp\ScriptgamesTemp' -ModuleName $moduleID -Computer $computerName -Password 'ScriptingGames'
+            
         }
 
     }
