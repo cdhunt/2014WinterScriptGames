@@ -231,7 +231,7 @@ function Write-ScanResults
         {
             New-Item -Path $Path -Name $Computer -ItemType Directory -Force
         }
-        Add-Content -Path $reportFullPath -Value $secureResults -Encoding UTF8 -Force
+        Set-Content -Value $secureResults -Path $reportFileName -Encoding UTF8 -Force
     }
 }
 
@@ -252,6 +252,10 @@ function Read-ScanResults
     [OutputType([PSObject])]
     Param
     (
+        # Param2 help description
+        [Parameter(Mandatory=$true, Position=0)]
+        [string]
+        $Path,
 
         [Parameter(Mandatory=$true, Position=1)]      
         [string]
@@ -279,9 +283,9 @@ function Read-ScanResults
     $datestamp = Get-Date -Format "yyyy-MM-dd"
     $reportFileName = "$($ModuleName)_$datestamp.dat"
     $reportFolderPath = Join-Path -Path $Path -ChildPath $Computer
-    $reportFullPath = Join-Path -Path reportFolderPath -ChildPath $newReportFileName
+    $reportFullPath = Join-Path -Path $reportFolderPath -ChildPath $reportFileName
 
-    if (Test-Path -Path $reportFullPath -PathType File)
+    if (Test-Path -Path $reportFullPath -PathType Leaf)
     {
         $contents = Get-Content $reportFullPath -Raw
 

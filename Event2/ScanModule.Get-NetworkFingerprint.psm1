@@ -20,12 +20,15 @@ function Get-NetworkFingerprint
     End
     {
         $tcpListeners = [net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveTcpListeners()
-
-        $openPorts = $tcpListeners | 
-                        Select-Object -Expand Port -Unique | 
+        <#
+        $tcpListeners | Select-Object -Expand Port -Unique | 
                         ForEach-Object {$_ -as [int]} | 
                         Sort-Object |
                         Select-Object @{Label="Port"; Expression={$_}} |
+                        Write-Output
+        #>
+        $tcpListeners | Select-Object -Expand Port -Unique | 
+                        Sort-Object |                       
                         Write-Output
 
         <#
