@@ -19,12 +19,12 @@ function Get-EnvironmentVarsFingerprint
 
     End
     {
-        $items = Get-ChildItem "env:\"
-
+        $items = Get-ChildItem "env:\path"
+       
         Foreach ($item in $items)
         {
             [pscustomobject]@{"Name" = $item.Name.ToString()
-                              "Value" = $item.Value.ToString()} | 
+                              "Value" = $item.Value.ToString()} |
                               Write-Output
         }
     }

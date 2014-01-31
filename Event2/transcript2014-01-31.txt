@@ -1,0 +1,84 @@
+**********************
+Windows PowerShell transcript start
+Start time: 20140131105452
+Username  : VERINT\chunt 
+Machine	  : MYCOMPY386 (Microsoft Windows NT 6.1.7601 Service Pack 1) 
+**********************
+Transcript started, output file is C:\Users\chunt\Documents\GitHub\2014WinterSc
+riptGames\Event2\transcript2014-01-31.txt
+PS C:\temp> Import-Module C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\ExecutionEngine.psm1
+PS C:\temp> Import-Module C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\StorageEngine.psm1
+PS C:\temp> Invoke-Scans -Path C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2 -Verbose
+VERBOSE: Loading module ScanModule.Get-EnvironmentVarsFingerprint
+VERBOSE: Loading module from path 
+'C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\ScanModule.Get-En
+vironmentVarsFingerprint.psm1'.
+VERBOSE: Importing function 'Get-EnvironmentVarsFingerprint'.
+VERBOSE: Loading module ScanModule.Get-FileFingerprint
+VERBOSE: Loading module from path 
+'C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\ScanModule.Get-Fi
+leFingerprint.psm1'.
+VERBOSE: Importing function 'Get-FileFingerprint'.
+VERBOSE: Loading module ScanModule.Get-NetworkFingerprint
+VERBOSE: Loading module from path 
+'C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\ScanModule.Get-Ne
+tworkFingerprint.psm1'.
+VERBOSE: Importing function 'Get-NetworkFingerprint'.
+VERBOSE: Loading module ScanModule.Get-StartupLocationsFingerprint
+VERBOSE: Loading module from path 
+'C:\Users\chunt\Documents\GitHub\2014WinterScriptGames\Event2\ScanModule.Get-St
+artupLocationsFingerprint.psm1'.
+VERBOSE: Importing function 'Get-StartupLocationsFingerprint'.
+VERBOSE: Executing Get-EnvironmentVarsFingerprint
+VERBOSE: Executing Get-FileFingerprint
+VERBOSE: Executing Get-NetworkFingerprint
+VERBOSE: Executing Get-StartupLocationsFingerprint
+PS C:\temp> Read-ScanResults -Path C:\temp\ScriptgamesTemp -Computer $env:COMPUTERNAME -ModuleName 'NetworkFingerprint' -Date (Get-Date) -Password 'ScriptingGames' -SerializeAs JSON
+80
+135
+139
+445
+623
+902
+912
+1025
+1026
+1027
+
+PS C:\temp> Read-ScanResults -Path C:\temp\ScriptgamesTemp -Computer $env:COMPUTERNAME -ModuleName 'StartupLocationsFingerprint' -Date (Get-Date) -Password 'ScriptingGames' -SerializeAs JSON
+
+Name                                                                           
+----                                                                           
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\.NET CLR Data             
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\.NET CLR Networking       
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\.NET CLR Networking 4.0...
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\.NET Data Provider for ...
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\.NET Data Provider for ...
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\.NET Memory Cache 4.0     
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\.NETFramework             
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\1394ohci                  
+HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Accelerometer             
+Bluetooth.lnk                                                                  
+
+
+PS C:\temp> dir C:\temp\ScriptgamesTemp\MYCOMPY386
+
+
+    Directory: C:\temp\ScriptgamesTemp\MYCOMPY386
+
+
+Mode                LastWriteTime     Length Name                              
+----                -------------     ------ ----                              
+-a---         1/31/2014  10:55 AM        909 EnvironmentVarsFingerprint_2014-01
+                                             -31.dat                           
+-a---         1/31/2014  10:56 AM          3 FileFingerprint_2014-01-31.dat    
+-a---         1/31/2014  10:56 AM        289 NetworkFingerprint_2014-01-31.dat 
+-a---         1/31/2014  10:56 AM       6049 StartupLocationsFingerprint_2014-0
+                                             1-31.dat                          
+
+
+PS C:\temp> Stop-Transcript
+**********************
+Windows PowerShell transcript end
+End time: 20140131105744
+**********************

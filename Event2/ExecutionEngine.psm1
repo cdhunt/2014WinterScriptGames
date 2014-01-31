@@ -33,24 +33,7 @@ function Invoke-Scans
         # Param1 help description
         [Parameter(Position=0)]
         [ValidateNotNullOrEmpty()]
-        $Path,
-
-        # Param2 help description
-        [Parameter(ParameterSetName='Parameter Set 1')]
-        [AllowNull()]
-        [AllowEmptyCollection()]
-        [AllowEmptyString()]
-        [ValidateScript({$true})]
-        [ValidateRange(0,5)]
-        [int]
-        $Param2,
-
-        # Param3 help description
-        [Parameter(ParameterSetName='Another Parameter Set')]
-        [ValidatePattern("[a-z]*")]
-        [ValidateLength(0,15)]
-        [String]
-        $Param3
+        $Path
     )
 
     Begin
@@ -84,7 +67,7 @@ function Invoke-Scans
 
             #Write-Outp#ut $results
 
-            $results | Write-ScanResults -Path 'C:\temp\ScriptgamesTemp' -ModuleName $moduleID -Computer $computerName -Password 'ScriptingGames'
+            $results | Write-ScanResults -Path 'C:\temp\ScriptgamesTemp' -ModuleName $moduleID -Computer $computerName -Password 'ScriptingGames' -SerializeAs JSON
             
         }
 

@@ -231,7 +231,7 @@ function Write-ScanResults
         {
             New-Item -Path $Path -Name $Computer -ItemType Directory -Force
         }
-        Set-Content -Value $secureResults -Path $reportFileName -Encoding UTF8 -Force
+        Set-Content -Value $secureResults -Path $reportFullPath -Encoding UTF8 -Force
     }
 }
 
@@ -289,9 +289,9 @@ function Read-ScanResults
     {
         $contents = Get-Content $reportFullPath -Raw
 
-        $decrypted = Read-EncryptedString -InputObject $contents -Password Password
+        $decrypted = Read-EncryptedString -InputObject $contents -Password $Password
 
-        if ($decrypted[0] -match '{' -or $SerializeAs -eq "JSON")
+        if (($decrypted[0] -match '{' -or $decrypted[0] -match '\[') -or ($SerializeAs -eq "JSON"))
         {
             $decrypted | ConvertFrom-Json
         }
