@@ -11,32 +11,43 @@
 function New-ACE
 {
     [CmdletBinding()]
-    [OutputType([int])]
+    [OutputType([Security.AccessControl.FileSystemAccessRule])]
     Param
     (
         # Param1 help description
         [Parameter(Mandatory, Position=0)]
         [Alias("User", "Group")]
+        [string[]]
         $SecurityPrincipal,
 
         # Param2 help description
         [Parameter(Mandatory, Position=1)]
         [ValidateSet("AppendData", "ChangePermissions", "CreateDirectories", "CreateFiles", "Delete", "DeleteSubdirectoriesAndFiles", "ExecuteFile", "FullControl", "ListDirectory", "Modify", "Read", "ReadAndExecute", "ReadAttributes", "ReadData", "ReadExtendedAttributes", "ReadPermissions", "Synchronize", "TakeOwnership", "Traverse", "Write", "WriteAttributes", "WriteData", "WriteExtendedAttributes")]
         [String[]]
-        $Right
+        $Right,
+
+        [Parameter(Position=3)]
+        [ValidateSet("Allow", "Deny")]
+        [String]
+        $ControlType = 'Allow'
     )
 
-    $colRights = [Security.AccessControl.FileSystemRights]($Right -join ",")
-
     $InheritanceFlag = [Security.AccessControl.InheritanceFlags]::None 
-    $PropagationFlag = [Security.AccessControl.PropagationFlags]::None 
+    $PropagationFlag = [Security.AccessControl.PropagationFlags]::None
 
-    $objType =[Security.AccessControl.AccessControlType]::Allow 
+    $objType = [Security.AccessControl.AccessControlType]$ControlType
+    
+    foreach ($sp in $SecurityPrincipal)
+    {
+        foreach ($r in $Right)
+        {            
+            $objUser = New-Object Security.Principal.NTAccount($sp) 
+            $colRights = [Security.AccessControl.FileSystemRights]$r
 
-    $objUser = New-Object Security.Principal.NTAccount($SecurityPrincipal) 
+            $objACE = New-Object Security.AccessControl.FileSystemAccessRule `
+                ($objUser, $colRights, $InheritanceFlag, $PropagationFlag, $objType) 
 
-    $objACE = New-Object Security.AccessControl.FileSystemAccessRule `
-        ($objUser, $colRights, $InheritanceFlag, $PropagationFlag, $objType) 
-
-    return $objACE
+                Write-Output $objACE
+        }
+    }
 }

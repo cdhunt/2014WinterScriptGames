@@ -9,15 +9,15 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
             $results = New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'FullControl', 'Read'
 
             It "Should not contain any Pricipal over than Administrator" {                
-                $results.IdentityReference -ne 'BUILTIN\Administrators' | should not be $true
+                $results.IdentityReference -notcontains 'BUILTIN\Administrators' | should not be $true
             }
 
             It "Property AccessControlType should be 'Allow' and Rights should be 'FullControl' for 'BUILTIN\Administrators'" {
-                $results.IdentityReference -eq 'BUILTIN\Administrators' -and $results.AccessControlType -eq 'Allow' -and $results.FileSystemRights -eq 'FullControl' | should be $true
+                $results.IdentityReference -eq 'BUILTIN\Administrators' -and $results.AccessControlType -eq 'Allow' -and $results.FileSystemRights -match 'FullControl' | should be $true
             }
 
             It "Property AccessControlType should be 'Allow' and Rights should be 'Read' for 'BUILTIN\Administrators'" {
-                $results.IdentityReference -eq 'BUILTIN\Administrators' -and $results.AccessControlType -eq 'Allow' -and $results.FileSystemRights -eq 'Read' | should be $true
+                $results.IdentityReference -eq 'BUILTIN\Administrators' -and $results.AccessControlType -eq 'Allow' -and $results.FileSystemRights -match 'Read' | should be $true
             }
         }
     }
