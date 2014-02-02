@@ -2,9 +2,9 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
     $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
     . "$here\$sut"
 
-    Describe "New-ACL" {
+    Describe "New-ACE" {
         Context "Testing ACL Creation" {
-            $results = New-ACL
+            $results = New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'FullControl'
 
             It "Should return a new ACE object" {                
                 $results | should Not BeNullOrEmpty
