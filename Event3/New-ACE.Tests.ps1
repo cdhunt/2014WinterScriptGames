@@ -6,14 +6,18 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
     Describe "New-ACE" {
         Context "Testing ACL Creation" {
-            $results = New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'FullControl'
+            $results = New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'FullControl', 'Read'
 
             It "Should not contain any Pricipal over than Administrator" {                
-                $results | Where {$_.IdentityReference -ne 'BUILTIN\Administrators'} | should BeNullOrEmpty
+                $results.IdentityReference -ne 'BUILTIN\Administrators' | should not be $true
             }
 
             It "Property AccessControlType should be 'Allow' and Rights should be 'FullControl' for 'BUILTIN\Administrators'" {
-                $results | Where {$_.IdentityReference -eq 'BUILTIN\Administrators' -and $_.AccessControlType -eq 'Allow' -and $_.FileSystemRights -eq 'FullControl'} | should Not BeNullOrEmpty
+                $results.IdentityReference -eq 'BUILTIN\Administrators' -and $results.AccessControlType -eq 'Allow' -and $results.FileSystemRights -eq 'FullControl' | should be $true
+            }
+
+            It "Property AccessControlType should be 'Allow' and Rights should be 'Read' for 'BUILTIN\Administrators'" {
+                $results.IdentityReference -eq 'BUILTIN\Administrators' -and $results.AccessControlType -eq 'Allow' -and $results.FileSystemRights -eq 'Read' | should be $true
             }
         }
     }
