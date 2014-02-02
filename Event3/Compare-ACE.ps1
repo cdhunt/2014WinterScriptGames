@@ -25,7 +25,7 @@ function Compare-ACE
         $DifferenceObject
     )
 
-    $comparison = Compare-Object -ReferenceObject $ReferenceObject -DifferenceObject $DifferenceObject -Property FileSystemRights, AccessControlType, IdentityReference, IsInherited, InheritanceFlags, PropagationFlags
+    $comparison = Compare-Object -ReferenceObject $ReferenceObject -DifferenceObject $DifferenceObject -Property FileSystemRights, AccessControlType, IdentityReference, InheritanceFlags, PropagationFlags
 
     if ($comparison)
     {
