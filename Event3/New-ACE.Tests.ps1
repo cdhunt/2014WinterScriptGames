@@ -1,3 +1,5 @@
+#Require -Module Pester
+
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
     $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
     . "$here\$sut"
@@ -6,8 +8,8 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
         Context "Testing ACL Creation" {
             $results = New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'FullControl'
 
-            It "Should return a new ACE object" {                
-                $results | should Not BeNullOrEmpty
+            It "Should not contain any Pricipal over than Administrator" {                
+                $results | Where {$_.IdentityReference -ne 'BUILTIN\Administrators'} | should BeNullOrEmpty
             }
 
             It "Property AccessControlType should be 'Allow' and Rights should be 'FullControl' for 'BUILTIN\Administrators'" {
