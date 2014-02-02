@@ -1,12 +1,28 @@
 <#
 .Synopsis
-   Short description
+   Create a new Access Control Entry.
 .DESCRIPTION
-   Long description
+   Create a new Access Control Entry for each provided SecurityPrincipal with the provided parameters.
 .EXAMPLE
-   Example of how to use this cmdlet
+   PS C:\> New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'FullControl'
+
+   
+   FileSystemRights  : FullControl
+   AccessControlType : Allow
+   IdentityReference : BUILTIN\Administrators
+   IsInherited       : False
+   InheritanceFlags  : None
+   PropagationFlags  : None
 .EXAMPLE
-   Another example of how to use this cmdlet
+   PS C:\> New-ACE -SecurityPrincipal 'BUILTIN\users' -Right 'Read', 'Write' -ControlType Deny
+
+
+   FileSystemRights  : Write, Read, Synchronize
+   AccessControlType : Deny
+   IdentityReference : BUILTIN\users
+   IsInherited       : False
+   InheritanceFlags  : None
+   PropagationFlags  : None
 #>
 function New-ACE
 {
@@ -14,18 +30,20 @@ function New-ACE
     [OutputType([Security.AccessControl.FileSystemAccessRule])]
     Param
     (
-        # Param1 help description
+        # User or Group name in the form of Domain\Object
         [Parameter(Mandatory, Position=0)]
-        [Alias("User", "Group")]
+        [Alias("User", "Group", "IdentityReference")]
+        [ValidatePattern(".+\\.+")]
         [string[]]
         $SecurityPrincipal,
 
-        # Param2 help description
+        # Rights to attach to this Access Control Entry
         [Parameter(Mandatory, Position=1)]
         [ValidateSet("AppendData", "ChangePermissions", "CreateDirectories", "CreateFiles", "Delete", "DeleteSubdirectoriesAndFiles", "ExecuteFile", "FullControl", "ListDirectory", "Modify", "Read", "ReadAndExecute", "ReadAttributes", "ReadData", "ReadExtendedAttributes", "ReadPermissions", "Synchronize", "TakeOwnership", "Traverse", "Write", "WriteAttributes", "WriteData", "WriteExtendedAttributes")]
         [String[]]
         $Right,
 
+        # Allow or Deny
         [Parameter(Position=3)]
         [ValidateSet("Allow", "Deny")]
         [String]
@@ -39,15 +57,19 @@ function New-ACE
     
     foreach ($sp in $SecurityPrincipal)
     {
+        $objUser = New-Object Security.Principal.NTAccount($sp) 
+
+        $colRights = @()
         foreach ($r in $Right)
         {            
-            $objUser = New-Object Security.Principal.NTAccount($sp) 
-            $colRights = [Security.AccessControl.FileSystemRights]$r
+            
+            $colRights += [Security.AccessControl.FileSystemRights]$r
+            
+        }
 
-            $objACE = New-Object Security.AccessControl.FileSystemAccessRule `
+        $objACE = New-Object Security.AccessControl.FileSystemAccessRule `
                 ($objUser, $colRights, $InheritanceFlag, $PropagationFlag, $objType) 
 
-                Write-Output $objACE
-        }
+        Write-Output $objACE
     }
 }
