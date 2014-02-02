@@ -6,18 +6,30 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
     Describe "New-ACE" {
         Context "Testing ACL Creation" {
-            $results = New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'FullControl', 'Read'
+            $results = New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'Read','Write' -Inheritance ContainerInherit -Propagation InheritOnly
 
-            It "Should not contain any Pricipal over than Administrator" {                
-                $results.IdentityReference -notcontains 'BUILTIN\Administrators' | should not be $true
+            It "IdentityReference should be 'BUILTIN\Administrators'" {                
+                $results.IdentityReference | should be 'BUILTIN\Administrators'
             }
 
-            It "Property AccessControlType should be 'Allow' and Rights should be 'FullControl' for 'BUILTIN\Administrators'" {
-                $results.IdentityReference -eq 'BUILTIN\Administrators' -and $results.AccessControlType -eq 'Allow' -and $results.FileSystemRights -match 'FullControl' | should be $true
+            It "AccessControlType should be 'Allow'" {
+                $results.AccessControlType | should be 'Allow'
             }
 
-            It "Property AccessControlType should be 'Allow' and Rights should be 'Read' for 'BUILTIN\Administrators'" {
-                $results.IdentityReference -eq 'BUILTIN\Administrators' -and $results.AccessControlType -eq 'Allow' -and $results.FileSystemRights -match 'Read' | should be $true
+            It "FileSystemRights should match 'Read'" {
+                $results.FileSystemRights | should match 'Read'
+            }
+
+            It "FileSystemRights should match 'Write'" {
+                $results.FileSystemRights | should match 'Write'
+            }
+
+            It "Inheritance should match ContainerInherit" {
+                $results.InheritanceFlags | should match 'ContainerInherit'
+            }
+
+            It "Propagation should match InheritOnly" {
+                $results.PropagationFlags | should match  'InheritOnly'
             }
         }
     }

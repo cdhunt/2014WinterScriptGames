@@ -44,16 +44,27 @@ function New-ACE
         $Right,
 
         # Allow or Deny
-        [Parameter(Position=3)]
+        [Parameter(Position=2)]
         [ValidateSet("Allow", "Deny")]
         [String]
-        $ControlType = 'Allow'
+        $ControlType = 'Allow',
+
+        # Inheritance Flag
+        [Parameter(Position=3)]
+        [ValidateSet("None", "ContainerInherit", "ObjectInherit")]
+        [String]
+        $Inheritance = 'None',
+
+        # Propagation Flag
+        [Parameter(Position=4)]
+        [ValidateSet("None", "InheritOnly", "NoPropagateInherit")]
+        [String]
+        $Propagation = 'None'
     )
 
-    $InheritanceFlag = [Security.AccessControl.InheritanceFlags]::None 
-    $PropagationFlag = [Security.AccessControl.PropagationFlags]::None
-
     $objType = [Security.AccessControl.AccessControlType]$ControlType
+    $InheritanceFlag = [Security.AccessControl.InheritanceFlags]$Inheritance
+    $PropagationFlag = [Security.AccessControl.PropagationFlags]$Propagation
     
     foreach ($sp in $SecurityPrincipal)
     {
@@ -61,10 +72,8 @@ function New-ACE
 
         $colRights = @()
         foreach ($r in $Right)
-        {            
-            
-            $colRights += [Security.AccessControl.FileSystemRights]$r
-            
+        {                        
+            $colRights += [Security.AccessControl.FileSystemRights]$r            
         }
 
         $objACE = New-Object Security.AccessControl.FileSystemAccessRule `
