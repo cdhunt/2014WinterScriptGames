@@ -7,32 +7,28 @@ $goodACL = ,(New-ACE -SecurityPrincipal "builtin\administrators" -Right FullCont
 
 $good = @()
 $bad = @()
-$missing = @()
+
+$c = $goodACL.Count
+
+$missing = ,$true * $c
 
 # Step through each ACE on an object
 foreach ($objectAccess in $fileACL.Access)
 {
 
-    foreach ($acl in $goodACL)
+    for( $i=0; $i -lt $c; $i++)
     {
-        # TODO: If goodACL doesn't match any existing, keep track of it to add it.
-        #$missing = $true
 
-        $result = Compare-ACE $acl $objectAccess
+        $result = Compare-ACE $goodACL[$i] $objectAccess
 
         if ($result)
         {
-            $missing = $false
+            $missing[$i] = $false
             $good += $objectAccess
         }
         else
         {
             $bad += $objectAccess
         }
-
-        #if ($missing)
-        #{
-        #    $missing += $acl
-        #}
     }
 }
