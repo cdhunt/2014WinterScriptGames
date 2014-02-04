@@ -42,7 +42,7 @@ function New-ACE
 
         # Rights to attach to this Access Control Entry
         [Parameter(Mandatory, Position=1)]
-        [Security.AccessControl.FileSystemRights[]]
+        [Security.AccessControl.FileSystemRights]
         $Right,
 
         # Allow or Deny
@@ -63,15 +63,9 @@ function New-ACE
    
     foreach ($sp in $SecurityPrincipal)
     {
-        $objUser = New-Object Security.Principal.NTAccount($sp) 
+        $user = New-Object Security.Principal.NTAccount($sp) 
 
-        $colRights = @()
-        foreach ($r in $Right)
-        {                        
-            $colRights += $r            
-        }
-
-        $objACE = New-Object Security.AccessControl.FileSystemAccessRule($objUser, $colRights, $Inheritance, $Propagation, $ControlType) 
+        $objACE = New-Object Security.AccessControl.FileSystemAccessRule($user, $Right, $Inheritance, $Propagation, $ControlType) 
 
         Write-Output $objACE
     }
