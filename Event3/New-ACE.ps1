@@ -33,7 +33,10 @@ function New-ACE
         # User or Group name in the form of Domain\Object
         [Parameter(Mandatory, Position=0)]
         [Alias("User", "Group", "IdentityReference")]
-        [ValidateScript({if ($_ -match ".+\\.+") {$true} else {Throw "Please provide the SecurityPricipal in the form of Domain\Object."}})]
+        [ValidateScript({
+            if ($_ -match ".+\\.+") {$true} else 
+            {Throw "Please provide the SecurityPricipal in the form of Domain\Object."}
+        })]
         [string[]]
         $SecurityPrincipal,
 
