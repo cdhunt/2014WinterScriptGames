@@ -32,4 +32,18 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
                 $results.PropagationFlags | should match  'InheritOnly'
             }
         }
+        Context "Parameter Validation" {
+            It "Should not validate with bad SecurityPrincipal" {
+                { New-ACE -SecurityPrincipal 'Administrators' -Right 'Read','Write' } | Should Throw
+            }
+            It "Should not validate with bad Right" {
+                { New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'DeleteAllTheThings'} | Should Throw
+            }
+            It "Should not validate with bad Inheritance" {
+                { New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'Read','Write' -Inheritance Invaild } | Should Throw
+            }
+            It "Should not validate with bad Propagation" {
+                { New-ACE -SecurityPrincipal 'BUILTIN\Administrators' -Right 'Read','Write' -Propagation NoGood } | Should Throw
+            }
+        }
     }

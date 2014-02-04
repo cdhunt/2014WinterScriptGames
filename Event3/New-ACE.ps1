@@ -33,39 +33,31 @@ function New-ACE
         # User or Group name in the form of Domain\Object
         [Parameter(Mandatory, Position=0)]
         [Alias("User", "Group", "IdentityReference")]
-        [ValidatePattern(".+\\.+")]
+        [ValidateScript({if ($_ -match ".+\\.+") {$true} else {Throw "Please provide the SecurityPricipal in the form of Domain\Object."}})]
         [string[]]
         $SecurityPrincipal,
 
         # Rights to attach to this Access Control Entry
         [Parameter(Mandatory, Position=1)]
-        [ValidateSet("AppendData", "ChangePermissions", "CreateDirectories", "CreateFiles", "Delete", "DeleteSubdirectoriesAndFiles", "ExecuteFile", "FullControl", "ListDirectory", "Modify", "Read", "ReadAndExecute", "ReadAttributes", "ReadData", "ReadExtendedAttributes", "ReadPermissions", "Synchronize", "TakeOwnership", "Traverse", "Write", "WriteAttributes", "WriteData", "WriteExtendedAttributes")]
-        [String[]]
+        [Security.AccessControl.FileSystemRights[]]
         $Right,
 
         # Allow or Deny
         [Parameter(Position=2)]
-        [ValidateSet("Allow", "Deny")]
-        [String]
+        [Security.AccessControl.AccessControlType]
         $ControlType = 'Allow',
 
         # Inheritance Flag
         [Parameter(Position=3)]
-        [ValidateSet("None", "ContainerInherit", "ObjectInherit")]
-        [String]
+        [Security.AccessControl.InheritanceFlags]
         $Inheritance = 'None',
 
         # Propagation Flag
         [Parameter(Position=4)]
-        [ValidateSet("None", "InheritOnly", "NoPropagateInherit")]
-        [String]
+        [Security.AccessControl.PropagationFlags]
         $Propagation = 'None'
     )
-
-    $objType = [Security.AccessControl.AccessControlType]$ControlType
-    $InheritanceFlag = [Security.AccessControl.InheritanceFlags]$Inheritance
-    $PropagationFlag = [Security.AccessControl.PropagationFlags]$Propagation
-    
+   
     foreach ($sp in $SecurityPrincipal)
     {
         $objUser = New-Object Security.Principal.NTAccount($sp) 
@@ -73,11 +65,10 @@ function New-ACE
         $colRights = @()
         foreach ($r in $Right)
         {                        
-            $colRights += [Security.AccessControl.FileSystemRights]$r            
+            $colRights += $r            
         }
 
-        $objACE = New-Object Security.AccessControl.FileSystemAccessRule `
-                ($objUser, $colRights, $InheritanceFlag, $PropagationFlag, $objType) 
+        $objACE = New-Object Security.AccessControl.FileSystemAccessRule($objUser, $colRights, $Inheritance, $Propagation, $ControlType) 
 
         Write-Output $objACE
     }
