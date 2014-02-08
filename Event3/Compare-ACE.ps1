@@ -20,7 +20,7 @@ function Compare-ACE
         $ReferenceObject,
 
         # Param2 help description
-        [Parameter(Mandatory, Position=2)]
+        [Parameter(Mandatory, Position=1)]
         [Security.AccessControl.FileSystemAccessRule]
         $DifferenceObject
     )
